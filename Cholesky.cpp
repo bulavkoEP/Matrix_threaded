@@ -98,7 +98,7 @@ int get_inverse(double* mat, double* res, double* d, int n, int n_threads, int t
 		synchronize(n_threads);		
 	}
 
-	synchronize(n_threads);
+	//synchronize(n_threads);
     
 	row_from = n * thread_i / n_threads;
     row_to = n * (thread_i + 1) / n_threads;
@@ -117,12 +117,10 @@ int get_inverse(double* mat, double* res, double* d, int n, int n_threads, int t
 
 	synchronize(n_threads);
 
-	for (int i = 0; i < n; ++i) {
-		//synchronize(n_threads);
-		row_from = (i + 1) * thread_i / n_threads;
-    	row_to = (i + 1) * (thread_i + 1) / n_threads;
-
-		for (int j = row_from; j <= row_to; ++j)
+	row_from = n * thread_i / n_threads;
+    row_to = n * (thread_i + 1) / n_threads;
+	for (int i = row_from; i < row_to; ++i) {
+		for (int j = 0; j <= i; ++j)
 		{
 			s = 0.0;
 			for (int k = i; k < n; ++k)
@@ -130,11 +128,7 @@ int get_inverse(double* mat, double* res, double* d, int n, int n_threads, int t
 			res[i * (i + 1) / 2 + j] = s;
 		}
 
-		synchronize(n_threads);
-		
-		row_from = (n - (i + 1)) * thread_i / n_threads + i + 1;
-    	row_to = (n - (i + 1)) * (thread_i + 1) / n_threads + i + 1;
-		for (int j = row_from; j < row_to; ++j)
+		for (int j = i + 1; j < n; ++j)
 		{
 			s = 0.0;
 			for (int k = j; k < n; ++k)
@@ -146,6 +140,7 @@ int get_inverse(double* mat, double* res, double* d, int n, int n_threads, int t
     return 1;
 }
 
+/*
 int cholesky_decomp(double* mat, double* res, double* d, int n, int n_threads, int thread_i) {
     double s = 0;
     double no = norm(mat, n);
@@ -177,4 +172,4 @@ int cholesky_decomp(double* mat, double* res, double* d, int n, int n_threads, i
 				res[j * (j + 1) / 2 + i] = s / (res[i * (i + 1) / 2 + i] * d[i]);
 		}
     return 1;
-}
+}*/
